@@ -52,7 +52,7 @@ int main(int argc, char** argv){
             for(int64_t handle : handles){
                 if(handle == -1) continue; // This k-mer does not exist in the index
                 if(counters[handle].size() == 0 || counters[handle].back().color != color){
-                    // No counter yet for this k-mer and this color set
+                    // No counter yet for this k-mer and this color
                     Counter C = {.color = color, .count = 0}; // Create a counter
                     counters[handle].push_back(C);
                     kmer_handles_found[handle] = 1;
