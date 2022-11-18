@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 
     vector<vector<Counter>> counters(sbwt_length); // K-mer handle -> list of counters
 
-    vector<bool> kmer_handles_found(sbwt_length);
+    vector<bool> kmer_handles_found(sbwt_length); // Bit vector that marks which k-mer handles have at least 1 counter
 
     // Arguments 2..(argc-1) are sequence files from which we want to compute the k-mer counts
     for(int64_t i = 2; i < argc; i++){
