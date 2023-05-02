@@ -6,7 +6,7 @@ using namespace sbwt;
 
 typedef plain_matrix_sbwt_t sbwt_t;
 
-std::vector<std::string> dump_all_kmers(const sdsl::bit_vector& A_bits,
+void dump_all_kmers_to_stdout(const sdsl::bit_vector& A_bits,
                           const sdsl::bit_vector& C_bits, 
                           const sdsl::bit_vector& G_bits, 
                           const sdsl::bit_vector& T_bits,
@@ -35,13 +35,13 @@ std::vector<std::string> dump_all_kmers(const sdsl::bit_vector& A_bits,
         exit(1);
     }
 
-    vector<string> all_kmers(n_nodes);
-    for(string& S : all_kmers) S.resize(k);
+    string kmers_concat(n_nodes * k, '\0');
 
     for(int64_t round = 0; round < k; round++){
         cerr << "round " << round << "/" << k-1 << endl;
         for(int64_t i = 0; i < n_nodes; i++){
-            all_kmers[i][k-1-round] = last[i];
+            int64_t pos = k-1-round;
+            kmers_concat[i*k + pos] = last[i];
         }
 
         // Propagate the labels one step forward in the graph
@@ -59,7 +59,9 @@ std::vector<std::string> dump_all_kmers(const sdsl::bit_vector& A_bits,
         last = propagated;
     }
 
-    return all_kmers;
+    for(int64_t i = 0; i < n_nodes; i++){
+        cout << kmers_concat.substr(i*k, k) << "\n";
+    }
 }
 
 int main(int argc, char** argv){
@@ -80,13 +82,13 @@ int main(int argc, char** argv){
     cerr << "SBWT loaded" << endl;
     cerr << "Extracting k-mers..." << endl;
 
-    vector<string> kmers = dump_all_kmers(
+    dump_all_kmers_to_stdout(
         sbwt.get_subset_rank_structure().A_bits,
         sbwt.get_subset_rank_structure().C_bits,
         sbwt.get_subset_rank_structure().G_bits,
         sbwt.get_subset_rank_structure().T_bits,
         sbwt.get_k());
 
-    for(const string& x : kmers) cout << x << "\n";
+    
 
 }
