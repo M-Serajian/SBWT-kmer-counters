@@ -1,3 +1,7 @@
+# Branch
+This branch of SBWT is dedicated to extract the Kmers related to Deep_TB project [Click here to visit Deep_TB!] https://github.com/MSEali/Deep_TB
+
+
 # SBWT
 
 This is the code for the paper [Succinct k-mer Set Representations Using Subset Rank Queries on the Spectral Burrows-Wheeler Transform (SBWT)](https://www.biorxiv.org/content/10.1101/2022.05.19.492613v1). The repository includes implementations of the various SBWT variants described in the paper. The data structures answer k-mer membership queries on the input data. Note that contrary to many other k-mer membership data structures, our code is not aware of DNA reverse complements. That is, it considers a k-mer and its reverse complement as separate k-mers.
