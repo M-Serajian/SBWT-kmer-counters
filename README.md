@@ -1,5 +1,5 @@
 # Branch
-This branch of SBWT is dedicated to extract the Kmers related to Deep_TB project [Click here to visit Deep_TB!] https://github.com/MSEali/Deep_TB
+This branch of SBWT is dedicated to extract the Kmers related to Deep_TB project [Click here to visit Deep_TB!] (https://github.com/MSEali/Deep_TB)
 
 
 # SBWT
