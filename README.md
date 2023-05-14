@@ -1,5 +1,5 @@
 # Branch
-This branch of SBWT is dedicated to extract the Kmers related to Deep_TB project [Deep_TB](https://github.com/MSEali/Deep_TB)
+This branch of SBWT is dedicated to extract the Kmers related to [Deep_TB](https://github.com/MSEali/Deep_TB) project
 
 To do: 
 Add a .sh file in the main directory called Ali_build.sh and add all the commands to build sdsl and other needed libraries on Hipergator
