@@ -17,6 +17,3 @@ run /SBWT-kmer-counters/build/bin/sbwt # Test that it works
 
 WORKDIR /SBWT-kmer-counters/counters
 RUN make -j
-RUN /SBWT-kmer-counters/counters/counters # Test that it works
-
-ENTRYPOINT ["/SBWT/counters/counters"]
