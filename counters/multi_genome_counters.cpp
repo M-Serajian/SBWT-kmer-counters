@@ -38,11 +38,10 @@ int main(int argc, char** argv){
 
     // Ali Edit:
 
-    //string text_filename = argv[2];
+    tring text_filename = argv[2]; // list of the fasta files
     
-
-    //std::ifstream file(text_filename);
-    //string line;
+    std::ifstream file(text_filename);
+    string line;
     int32_t color=0;
 
     while (std::getline(file, line)) { // read the file line by line
