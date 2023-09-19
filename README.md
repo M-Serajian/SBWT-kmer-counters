@@ -15,8 +15,6 @@ make -j
 
 If there are problems, read the README file in the SBWT subdirectory for help.
 
-Then, back at the root of this repository, 
-
 # Compiling the tool
 
 Compile this code by running `make counters dump_kmers multi_genome_counters`. Then, to build the SBWT index and find all the non-zero counters for all k-mers, run the pipeline:
