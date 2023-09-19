@@ -1,7 +1,7 @@
 #pragma once
 
 #include "setup_tests.hh"
-#include "buffered_streams.hh"
+#include "SeqIO/buffered_streams.hh"
 #include "globals.hh"
 #include "commands.hh"
 #include "variants.hh"
@@ -10,7 +10,7 @@
 using namespace sbwt;
 
 string read_gzipped_file(string filename){
-    zstr::ifstream in(filename);
+    seq_io::zstr::ifstream in(filename);
     string S;
     char c;
     while(in.get(c)) S += c;
@@ -24,12 +24,12 @@ TEST(CLI, end_to_end_build_and_query){
     string seqfile2 = get_temp_file_manager().create_filename("",".fna.gz");
 
     {
-        SeqIO::Writer<zstr::ofstream> writer(seqfile1);
+        seq_io::Writer<seq_io::zstr::ofstream> writer(seqfile1);
         for(string seq : seqs1) writer.write_sequence(seq.c_str(), seq.size());
     } // End of scope flushes stream (would not flush properly with flush() because of how zstr works)
 
     {
-        SeqIO::Writer<zstr::ofstream> writer(seqfile2);
+        seq_io::Writer<seq_io::zstr::ofstream> writer(seqfile2);
         for(string seq : seqs2) writer.write_sequence(seq.c_str(), seq.size());
     } // End of scope flushes stream (would not flush properly with flush() because of how zstr works)
     
@@ -58,10 +58,10 @@ TEST(CLI, end_to_end_build_and_query){
         // It has to be done this way because the flush method of zstr::ofstream does
         // not actually flush anything.
         
-        SeqIO::Writer<std::ofstream> w1(q1);
-        SeqIO::Writer<std::ofstream> w2(q2);
-        SeqIO::Writer<zstr::ofstream> w3(q3);
-        SeqIO::Writer<zstr::ofstream> w4(q4);
+        seq_io::Writer<std::ofstream> w1(q1);
+        seq_io::Writer<std::ofstream> w2(q2);
+        seq_io::Writer<seq_io::zstr::ofstream> w3(q3);
+        seq_io::Writer<seq_io::zstr::ofstream> w4(q4);
 
         for(string S : queries){
             w1.write_sequence(S.c_str(), S.size());

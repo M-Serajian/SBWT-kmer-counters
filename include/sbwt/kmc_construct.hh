@@ -2,8 +2,8 @@
 
 #include "Kmer.hh"
 #include <sdsl/bit_vectors.hpp>
-#include "SeqIO.hh"
-#include "buffered_streams.hh"
+#include "SeqIO/SeqIO.hh"
+#include "SeqIO/buffered_streams.hh"
 #include "EM_sort/EM_sort.hh"
 #include "kmc_construct_helper_classes.hh"
 #include "run_kmc.hh"
@@ -22,11 +22,12 @@ typedef KMC_construction_helper_classes::Kmer_stream_from_KMC_DB Kmer_stream_fro
 typedef KMC_construction_helper_classes::kmer_t kmer_t;
 typedef KMC_construction_helper_classes::Node Node;
 typedef KMC_construction_helper_classes::Node_stream_merger Node_stream_merger;
+typedef KMC_construction_helper_classes::SimpleSortedKmerDB SimpleSortedKmerDB;
 
 public:
 
     // Appends the prefixes of x to nodes
-    void add_prefixes(kmer_t z, Buffered_ofstream<>& out, char* buf){
+    void add_prefixes(kmer_t z, seq_io::Buffered_ofstream<>& out, char* buf){
         kmer_t prefix = z.copy();
         while(prefix.get_k() > 0){
             char edge_char = prefix.last();
@@ -97,40 +98,43 @@ public:
         }        
     }
 
+    // This deletes the KMC database on disk after use
     void write_nodes_and_dummies(const string& KMC_db_path, const string& nodes_outfile, const string& dummies_outfile, int64_t n_kmers){
         char node_serialize_buffer[Node::size_in_bytes()];
         
-        Buffered_ofstream nodes_out(nodes_outfile, ios::binary);
-        Buffered_ofstream dummies_out(dummies_outfile, ios::binary);
+        seq_io::Buffered_ofstream nodes_out(nodes_outfile, ios::binary);
+        seq_io::Buffered_ofstream dummies_out(dummies_outfile, ios::binary);
 
         // These streams are assumed to give k-mers in colex order
-        Kmer_stream_from_KMC_DB all_stream(KMC_db_path, false); // No reverse complements
-        vector<Kmer_stream_from_KMC_DB*> char_streams(255); // A KMC database stream for each character ACGT
+        Kmer_stream_from_KMC_DB kmc_db(KMC_db_path, false); // No reverse complements
+        write_log("Uncompressing KMC database to disk", LogLevel::MAJOR);
+        string uncompressed_db_filename = get_temp_file_manager().create_filename();
+        SimpleSortedKmerDB all_stream(kmc_db, uncompressed_db_filename);
+
+        // Delete the KMC database files. The temp file manager can not do this because
+        // KMC appends suffixes to the filename and the manager does not know about that.
+        std::filesystem::remove(KMC_db_path + ".kmc_pre");
+        std::filesystem::remove(KMC_db_path + ".kmc_suf");
+
+        vector<SimpleSortedKmerDB*> char_streams(255); // A k-mer database stream for each character ACGT
 
         string ACGT = "ACGT";
-        for(char c : ACGT)
-            char_streams[c] = new Kmer_stream_from_KMC_DB(KMC_db_path, false); // Kmer stream not be moved -> heap-allocate with new. Remember to delete.
+        for(char c : ACGT){
+            char_streams[c] = new SimpleSortedKmerDB(all_stream);
+            char_streams[c]->seek_to_char_block(c);
+        }
 
         map<char, Kmer<MAX_KMER_LENGTH>> cur_kmers; // cur_kmers[c] = the colex-smallest k-mer that ends in c that has not been seen yet
         set<char> all_processed; // K-mers ending in these characters have all been processed
 
-        // Rewind character streams to their starting positions
+        // Initialize first k-mer of each character block
         for(char c : ACGT){
-            write_log(string("Rewinding ") + c,LogLevel::MAJOR);
-            Progress_printer pp1(n_kmers, 100);
-            while(true){
-                if(char_streams[c]->done()){
-                    // This character is not the last character of any k-mer in the data
-                    all_processed.insert(c);
-                    break;
-                }
-                Kmer<MAX_KMER_LENGTH> x = char_streams[c]->next();
-                if(x.last() == c){
-                    cur_kmers[c] = x;
-                    break;
-                }
-                pp1.job_done();
+            if(char_streams[c]->done()){
+                // This character is not the last character of any k-mer in the data
+                all_processed.insert(c);
+                break;
             }
+            cur_kmers[c] = char_streams[c]->next();
         }
         
         kmer_t prev_x;
@@ -195,6 +199,7 @@ public:
 
         // Clean up
         for(char c : ACGT) delete char_streams[c];
+        get_temp_file_manager().delete_file(uncompressed_db_filename);
     }
 
     // Construct the given nodeboss from the given input strings
@@ -208,11 +213,6 @@ public:
 
         write_log("Writing nodes and dummies to disk", LogLevel::MAJOR);
         write_nodes_and_dummies(KMC_db_path, nodes_outfile, dummies_outfile, n_kmers);
-
-        // Delete the KMC database files. The temp file manager can not do this because
-        // KMC appends suffixes to the filename and the manager does not know about that.
-        std::filesystem::remove(KMC_db_path + ".kmc_pre");
-        std::filesystem::remove(KMC_db_path + ".kmc_suf");
 
         write_log("Sorting dummies on disk", LogLevel::MAJOR);
         string dummies_sortedfile = get_temp_file_manager().create_filename();

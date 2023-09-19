@@ -39,7 +39,7 @@ int main(int argc, char** argv){
     for(int64_t i = 2; i < argc; i++){
         int32_t color = i - 2; 
         string filename = argv[i];
-        SeqIO::Reader<> reader(filename);
+        seq_io::Reader<> reader(filename);
         while(true){
             int64_t length = reader.get_next_read_to_buffer();
             if(length == 0) break; // All sequences have been read

@@ -38,7 +38,7 @@ int main(int argc, char** argv){
 
     // Ali Edit:
 
-    tring text_filename = argv[2]; // list of the fasta files
+    string text_filename = argv[2]; // list of the fasta files
     
     std::ifstream file(text_filename);
     string line;
@@ -46,7 +46,7 @@ int main(int argc, char** argv){
 
     while (std::getline(file, line)) { // read the file line by line
         string filename= line;
-        SeqIO::Reader<> reader(filename);
+        seq_io::Reader<> reader(filename);
         
         while(true){
             int64_t length = reader.get_next_read_to_buffer();
