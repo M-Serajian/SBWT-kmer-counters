@@ -1,4 +1,4 @@
-all:
+counters:
 	g++-9 -g -std=c++2a -O3 main.cpp ../build/lib/libsbwt_static.a -L ../build/lib -I ../include/sbwt -I ../../SeqIO/include -I ../sdsl-lite/include -I ../build/external/sdsl-lite/build/external/libdivsufsort/include -I ../include -lsdsl -lz -o counters -Wno-deprecated-declarations
 
 dump_kmers:
