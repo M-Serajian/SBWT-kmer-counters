@@ -10,10 +10,10 @@ RUN git clone https://github.com/jnalanko/SBWT-kmer-counters
 WORKDIR /SBWT-kmer-counters
 RUN git checkout master
 
-WORKDIR /SBWT-kmer-counters/build
+WORKDIR SBWT-kmer-counters/SBWT/build
 RUN cmake .. -DCMAKE_CXX_COMPILER=g++-10 -DMAX_KMER_LENGTH=32
 RUN make -j
-run /SBWT-kmer-counters/build/bin/sbwt # Test that it works
+run bin/sbwt # Test that it works
 
-WORKDIR /SBWT-kmer-counters/counters
-RUN make -j
+WORKDIR /SBWT-kmer-counters
+RUN make counters dump_kmers multi_genome_counters
