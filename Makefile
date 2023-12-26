@@ -8,6 +8,6 @@ ALL_INCLUDES=${SDSL_INCLUDES} ${DIVSUFSORT_INCLUDES} ${SEQIO_INCLUDES} ${SBWT_IN
 SBWT_LIBS=-L $(shell pwd)/SBWT/build/external/sdsl-lite/build/lib/
 
 all: 
-	${CXX} -g -std=c++2a -O3 single_genome.cpp SBWT/build/libsbwt_static.a ${ALL_INCLUDES} ${SBWT_LIBS} -lsdsl -lz -o single_genome.cpp -Wno-deprecated-declarations
+	${CXX} -g -std=c++2a -O3 single_genome_counters.cpp SBWT/build/libsbwt_static.a ${ALL_INCLUDES} ${SBWT_LIBS} -lsdsl -lz -o single_genome_counters -Wno-deprecated-declarations
 	${CXX} -g -std=c++2a -O3 dump_kmers.cpp SBWT/build/libsbwt_static.a ${ALL_INCLUDES} ${SBWT_LIBS} -lsdsl -lz -o dump_kmers -Wno-deprecated-declarations	
 	${CXX} -g -std=c++2a -O3 multi_genome_counters.cpp SBWT/build/libsbwt_static.a ${ALL_INCLUDES} ${SBWT_LIBS} -lsdsl -lz -o multi_genome_counters -Wno-deprecated-declarations
